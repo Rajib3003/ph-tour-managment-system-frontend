@@ -11,45 +11,67 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input"
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { z } from "zod"
 import Password from "@/components/ui/Password";
+import { useRegisterMutation } from "@/redux/features/auth/auth.api";
+import { toast } from "sonner";
+
+
  
 const formSchema = z.object({
   name: z
       .string()
       .min(2, { message: "Name must be at least 2 characters." }),
 
-    email: z
-      .string()
+    email: z  
       .email({ message: "Please enter a valid email address." }),
 
     password: z
       .string()
       .min(8, { message: "Password must be at least 8 characters." }),
 
-    repassword: z
+    confirmPassword: z
       .string()
       .min(8, { message: "Confirm password must be at least 8 characters." }),
-})
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 export function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [register] = useRegisterMutation();
+  const navigate = useNavigate()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       email: "",
       password: "",
-      repassword: "",
+      confirmPassword: "",
     },
   })
 
-  const onSubmit = (data : z.infer<typeof formSchema>) => {
-    console.log(data)
+  const onSubmit = async (data : z.infer<typeof formSchema>) => {
+    const userInfo = {
+      name: data.name,
+      email: data.email,
+      password: data.password
+    }
+
+   
+    try {
+      const result = await register(userInfo).unwrap()
+      console.log(result)
+      toast.success("User Create Successfully **!")
+      navigate("/verify")
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -115,7 +137,7 @@ export function RegisterForm({
                 />
              <FormField
                 control={form.control}
-                name="repassword"
+                name="confirmPassword"
                 render={({ field }) => (
                     <FormItem>
                     <FormLabel>Confirm Password</FormLabel>
@@ -133,7 +155,7 @@ export function RegisterForm({
           </form>
         </Form>
           
-        </div>
+      </div>
        <div className="text-center text-sm">
         Already have an account?{" "}
         <Link to="/login" className="underline underline-offset-4">

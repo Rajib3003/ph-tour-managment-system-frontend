@@ -95,3 +95,10 @@ export default defineConfig([
 - https://logoipsum.com/
 
 
+## Redux tolkit 
+- bun add @reduxjs/toolkit react-redux
+
+## Axios install
+- bun add axios
+
+
