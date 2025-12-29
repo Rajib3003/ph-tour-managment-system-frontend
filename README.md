@@ -101,4 +101,8 @@ export default defineConfig([
 ## Axios install
 - bun add axios
 
+## postman result theke type ber korar link
+- https://transform.tools/json-to-typescript
+
+
 
