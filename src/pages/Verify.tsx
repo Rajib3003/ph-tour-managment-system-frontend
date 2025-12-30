@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Card,  CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
 import { useSendOtpMutation, useVerifyOtpMutation } from "@/redux/features/auth/auth.api"
@@ -29,6 +29,7 @@ export default function Verify() {
     const [confirmed, setConfirmed] = useState(false)
     const [sendOtp] = useSendOtpMutation()
     const [verifyOtp] = useVerifyOtpMutation()
+    const [timer, setTimer] = useState(10)
 
 
      const form = useForm<z.infer<typeof FormSchema>>({
@@ -39,20 +40,21 @@ export default function Verify() {
   });
 
   const handleSendOtp = async () => {
-    const toastId = toast.loading("Loading OTP")
-    try {
+    setConfirmed(true)
+    // const toastId = toast.loading("Loading OTP")
+    // try {
      
-    const res = await sendOtp({email: email}).unwrap()
+    // const res = await sendOtp({email: email}).unwrap()
 
-    if(res.success){
-      toast.success("OTP sent",{id: toastId})
-      setConfirmed(true)
-    }
+    // if(res.success){
+    //   toast.success("OTP sent",{id: toastId})
+    //   setConfirmed(true)
+    // }
 
     
-    } catch (error) {
-      console.log(error)
-    }
+    // } catch (error) {
+    //   console.log(error)
+    // }
   }
 
     const onSubmit =async (data: z.infer<typeof FormSchema>) => {
@@ -80,7 +82,18 @@ export default function Verify() {
         }
       },[email,navigate]
     )
-    console.log("location",location.state)
+
+    useEffect(()=>{
+        setInterval(()=> {
+          if(email && confirmed){
+            setTimer((prev: number) => prev - 1)
+          }          
+        },1000)
+      },[email,confirmed]
+    )
+
+
+    
   return (
     <div className="grid place-content-center h-screen">
       {confirmed ? (
@@ -124,7 +137,11 @@ export default function Verify() {
                             <InputOTPSlot index={5} />
                           </InputOTPGroup>
                         </InputOTP>
-                      </FormControl>                   
+                      </FormControl>    
+                      <FormDescription>
+                        <Button variant="link">Resent OTP</Button>
+                        {timer}
+                      </FormDescription>               
                       <FormMessage />
                     </FormItem>
                   )}

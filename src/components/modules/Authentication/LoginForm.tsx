@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { cn } from "@/lib/utils"
 import { useForm } from "react-hook-form"
 import {
@@ -43,12 +44,19 @@ export function LoginForm({
       const result = await login(loginInfo).unwrap()
       console.log(result)
       toast.success("User login Successfully **!")
-    } catch (error) {
+    } catch (error: any) {
       console.log(error)
-      toast.error("Login Error **!")
-      // if(error.status === 500){
+      // toast.error("Login Error **!")
+      if(error.status === 500){
         navigate("/verify", {state:data.email})
-      // }
+      }
+
+      if(error?.data?.error === "User is not Verified Yet"){
+        toast.error("User is not Verified Yet")
+        navigate("/verify", {state:data.email})
+      }else if (error?.data?.message === "Password does not match"){
+        toast.error("Password does not match")
+      }
     }
     }
 
