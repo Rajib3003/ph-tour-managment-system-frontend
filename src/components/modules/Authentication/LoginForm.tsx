@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { cn } from "@/lib/utils"
-import { useForm } from "react-hook-form"
+import { useForm, type SubmitHandler } from "react-hook-form"
 import {
   Form,
   FormControl,
@@ -17,6 +17,9 @@ import { Button } from "@/components/ui/button";
 
 import { toast } from "sonner";
 import { useLoginMutation} from "@/redux/features/auth/auth.api";
+import config from "@/config";
+import type { ILogin } from "@/types";
+
 
 
 
@@ -24,26 +27,29 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const [login] = useLoginMutation();
+ 
   const navigate = useNavigate()
     const form = useForm({    
     defaultValues: {      
-      email: "",
-      password: "",      
+      email: "ahmedrajib255@gmail.com",
+      password: "P@ssw0rd",      
     },
   })
-
-  const onSubmit = async (data: { email: string; password: string }) => {
-    const loginInfo = {      
-      email: data.email,
-      password: data.password
-    }
+  const [login] = useLoginMutation();
+  const onSubmit: SubmitHandler<ILogin> = async (data) => {
+    // const userInfo = {      
+    //   email: data.email,
+    //   password: data.password
+    // }
 
    
     try {
-      const result = await login(loginInfo).unwrap()
-      console.log(result)
-      toast.success("User login Successfully **!")
+      const res = await login(data).unwrap() as any
+      if(res?.success){
+        toast.success("User login Successfully **!")
+        navigate("/")
+      }
+      
     } catch (error: any) {
       console.log(error)
       // toast.error("Login Error **!")
@@ -107,9 +113,17 @@ export function LoginForm({
                 )}
                 />
           
-                <Button type="submit">Submit</Button>
+                <Button type="submit">Login</Button>
           </form>
         </Form>
+
+        <Button
+        onClick={() => window.open(`${config.baseUrl}/auth/google`)}
+        variant="link"
+        type="button"
+        >
+          Login with Google
+        </Button>
           
       </div>
        <div className="text-center text-sm">

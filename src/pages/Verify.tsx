@@ -3,6 +3,7 @@ import { Card,  CardContent, CardDescription, CardFooter, CardHeader, CardTitle 
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
+import { cn } from "@/lib/utils"
 import { useSendOtpMutation, useVerifyOtpMutation } from "@/redux/features/auth/auth.api"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Dot } from "lucide-react"
@@ -29,7 +30,7 @@ export default function Verify() {
     const [confirmed, setConfirmed] = useState(false)
     const [sendOtp] = useSendOtpMutation()
     const [verifyOtp] = useVerifyOtpMutation()
-    const [timer, setTimer] = useState(10)
+    const [timer, setTimer] = useState(20)
 
 
      const form = useForm<z.infer<typeof FormSchema>>({
@@ -39,41 +40,39 @@ export default function Verify() {
     },
   });
 
-  const handleSendOtp = async () => {
-    setConfirmed(true)
-    // const toastId = toast.loading("Loading OTP")
-    // try {
-     
-    // const res = await sendOtp({email: email}).unwrap()
-
-    // if(res.success){
-    //   toast.success("OTP sent",{id: toastId})
-    //   setConfirmed(true)
-    // }
-
+  const handleSendOtp = async () => {    
     
-    // } catch (error) {
-    //   console.log(error)
-    // }
+    const toastId = toast.loading("Loading OTP")
+    try {     
+      const res = await sendOtp({email: email}).unwrap()
+
+      if(res.success){
+        toast.success("OTP sent",{id: toastId})
+        setConfirmed(true)
+        setTimer(20)
+      }    
+    } catch (error) {
+      console.log(error)
+    }
   }
 
-    const onSubmit =async (data: z.infer<typeof FormSchema>) => {
-        const toastId = toast.loading("Verifying OTP")
-        try {
-        
-        const res = await verifyOtp({email, otp: data.pin}).unwrap()
-
-        if(res.success){
-          toast.success("OTP Verified",{id: toastId})
-          // setConfirmed(true)
-        }
-
-        
-        } catch (error) {
-          console.log(error)
-        }
+  const onSubmit =async (data: z.infer<typeof FormSchema>) => {
+      const toastId = toast.loading("Verifying OTP")
+      try {
       
-    }
+      const res = await verifyOtp({email, otp: data.pin}).unwrap()
+
+      if(res.success){
+        toast.success("OTP Verified",{id: toastId})
+        // setConfirmed(true)
+      }
+
+      
+      } catch (error) {
+        console.log(error)
+      }
+    
+  }
 
     useEffect(        
       ()=> {        
@@ -84,11 +83,15 @@ export default function Verify() {
     )
 
     useEffect(()=>{
-        setInterval(()=> {
+      if(!email || !confirmed){
+        return
+      }
+      const timerId = setInterval(()=> {
           if(email && confirmed){
-            setTimer((prev: number) => prev - 1)
+            setTimer((prev: number) => prev > 0 ? prev -1 : 0)
           }          
         },1000)
+        return () => clearInterval(timerId)
       },[email,confirmed]
     )
 
@@ -139,8 +142,20 @@ export default function Verify() {
                         </InputOTP>
                       </FormControl>    
                       <FormDescription>
-                        <Button variant="link">Resent OTP</Button>
-                        {timer}
+                        <Button
+                        onClick={handleSendOtp}
+                        type="button" 
+                        variant="link"
+                        disabled={timer !== 0}
+                        className={cn("p-0,m-0",
+                          {
+                            "cursor-pointer": timer ===0,
+                            "cursor-not-allowed text-gray-500": timer !==0,
+                          }
+                        )}
+                        >Resent OTP:{" "}
+                        </Button>
+                        {'  '}{timer}
                       </FormDescription>               
                       <FormMessage />
                     </FormItem>

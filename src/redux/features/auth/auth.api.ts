@@ -4,13 +4,19 @@ import type { ILogin, IRegister,  IResponse,  ISendOtp, IVerifyOtp } from "@/typ
 
 
 
-const authApi = baseApi.injectEndpoints({
+export const authApi = baseApi.injectEndpoints({
     endpoints : (builder)=>({
         login: builder.mutation<null, ILogin>({
-            query : (loginInfo) => ({
+            query : (userInfo) => ({
                 url: "/auth/login",
                 method: "POST",
-                data: loginInfo
+                data: userInfo
+            })
+        }),
+        logout: builder.mutation({
+            query : () => ({
+                url: "/auth/logout",
+                method: "POST",                
             })
         }),
           register: builder.mutation<null,IRegister>({
@@ -34,7 +40,20 @@ const authApi = baseApi.injectEndpoints({
                 data: userInfo
             })
         }),
+        userInfo: builder.query({
+            query : () => ({
+                url: "/user/me",
+                method: "GET",                
+            })
+        }),
     })
 })
 
-export const {useRegisterMutation, useLoginMutation, useSendOtpMutation, useVerifyOtpMutation} = authApi
+export const {
+    useRegisterMutation, 
+    useLoginMutation, 
+    useSendOtpMutation, 
+    useVerifyOtpMutation, 
+    useUserInfoQuery,
+    useLogoutMutation
+} = authApi
