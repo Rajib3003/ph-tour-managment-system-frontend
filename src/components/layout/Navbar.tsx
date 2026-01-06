@@ -16,11 +16,15 @@ import { Link } from "react-router";
 import { authApi, useLogoutMutation, useUserInfoQuery } from "@/redux/features/auth/auth.api";
 import { toast } from "sonner";
 import { useAppDispatch } from "@/redux/hook";
+import { ROLES } from "@/constants/role";
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },  
+  {id: "home", href: "/", label: "Home", role: "PUBLIC"},
+  { id: "about", href: "/about", label: "About", role: "PUBLIC" },  
+  { id: "admin", href: "/admin", label: "Dashboard", role: ROLES.ADMIN },  
+  { id: "super-admin", href: "/admin", label: "Dashboard", role: ROLES.SUPER_ADMIN },  
+  { id: "user", href: "/user", label: "Dashboard", role: ROLES.USER },  
 ];
 
 export default function Navbar() {
@@ -79,7 +83,7 @@ export default function Navbar() {
               <NavigationMenu className="max-w-none *:w-full">
                 <NavigationMenuList className="flex-col items-start gap-0 md:gap-2">
                   {navigationLinks.map((link) => (
-                    <NavigationMenuItem className="w-full" key={link.label}>
+                    <NavigationMenuItem className="w-full" key={link.id}>
                       <NavigationMenuLink  
                         asChild                      
                         className="py-1.5"                        
@@ -100,16 +104,22 @@ export default function Navbar() {
             {/* Navigation menu */}
             <NavigationMenu className="max-md:hidden">
               <NavigationMenuList className="gap-2">
-                {navigationLinks.map((link) => (
-                  <NavigationMenuItem key={link.label}>
-                    <NavigationMenuLink    
-                      asChild                  
-                      className="py-1.5 font-medium text-muted-foreground hover:text-primary"                     
-                    >
-                      <Link to={link.href}>{link.label}</Link>                      
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                ))}
+                {navigationLinks.map((link) => {
+                  const userRole = userInfoResult?.data?.data?.role
+                  if (link.role === "PUBLIC" || link.role === userRole) {
+                    return (
+                      <NavigationMenuItem key={link.id}>
+                        <NavigationMenuLink
+                          asChild
+                          className="py-1.5 font-medium text-muted-foreground hover:text-primary"
+                        >
+                          <Link to={link.href}>{link.label}</Link>
+                        </NavigationMenuLink>
+                      </NavigationMenuItem>
+                    )
+                  }
+                  return null
+                })}
               </NavigationMenuList>
             </NavigationMenu>
           </div>
