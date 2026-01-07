@@ -9,10 +9,11 @@ export const tourApi = baseApi.injectEndpoints({
     endpoints : (builder)=>({
         addTourType: builder.mutation<null, ILogin>({
             query : (tourTypeName) => ({
-                url: "/auth/login",
+                url: "/tour/create-tour-type",
                 method: "POST",
                 data: tourTypeName
-            }),            
+            }),  
+            invalidatesTags: ["TOUR"],          
         }),
         
         getTourtypes: builder.query({
@@ -20,6 +21,7 @@ export const tourApi = baseApi.injectEndpoints({
                 url: "/tour/tour-types",
                 method: "GET",                
             }),
+            providesTags: ["TOUR"],
             transformResponse: (response) => response.data,
         }),
     })
