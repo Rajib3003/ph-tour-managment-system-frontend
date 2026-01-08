@@ -1,14 +1,31 @@
+import { DeleteConfirmation } from "@/components/DeleteConfirmation";
 import { AddTourModal } from "@/components/modules/Admin/TourType/AddTourModal";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useGetTourtypesQuery } from "@/redux/features/Tour/tour.api";
+import { useGetTourtypesQuery, useRemoveTourTypeMutation } from "@/redux/features/Tour/tour.api";
 import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 
 export default function AddTourTypes() {
     const {data: tourTypesDatas = []} = useGetTourtypesQuery(undefined);
 
-    console.log(tourTypesDatas)
+    const [removeTourType] = useRemoveTourTypeMutation();
+
+    const handleRemoveTourType = async (tourId: string) => {
+      try {
+        const toastId = toast.loading("Removing tour type...");
+        const res = await removeTourType(tourId);
+        if(res?.data?.success){
+          toast.success("Tour type removed successfully!", { id: toastId });
+        }
+      } catch (error) {
+        console.log(error)
+      }
+      
+    }
+
+    
     
   return (
     <div className="w-full max-w-7xl mx-auto px-5">
@@ -25,10 +42,16 @@ export default function AddTourTypes() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {tourTypesDatas.map((item : {name: string, id: string}) => (
-              <TableRow key={item.id ?? item.name}>
+            {tourTypesDatas.map((item : {name: string, _id: string}) => (
+              <TableRow key={item._id}>
                 <TableCell className="font-medium">{item?.name}</TableCell>        
-                <TableCell className="font-medium"><Button><Trash2 className="w-4 h-4" /></Button></TableCell>
+                <TableCell className="font-medium">
+                  <DeleteConfirmation onConfirm={() => handleRemoveTourType(item._id)}>
+                    <Button variant="destructive">
+                      <Trash2 className="w-4 h-4" />
+                      </Button>
+                  </DeleteConfirmation>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody> 

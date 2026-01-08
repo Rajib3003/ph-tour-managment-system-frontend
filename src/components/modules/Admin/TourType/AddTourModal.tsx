@@ -29,9 +29,8 @@ export function AddTourModal() {
     name: "", // <-- give an initial empty string
   },
 })
-    const onSubmit =async (data) => {       
-      const res = await addTourType({ name: data.name });
-      console.log("res",res)
+    const onSubmit = async (data: { name: string }) => {       
+      const res = await addTourType({ name: data.name });      
       if(res?.data?.success){
         toast.success("Tour Type added successfully!")
       }

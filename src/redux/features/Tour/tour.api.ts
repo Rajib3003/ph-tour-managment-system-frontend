@@ -1,5 +1,4 @@
 import { baseApi } from "@/redux/baseApi";
-import type { ILogin } from "@/types/auth.type";
 
 
 
@@ -7,11 +6,18 @@ import type { ILogin } from "@/types/auth.type";
 
 export const tourApi = baseApi.injectEndpoints({
     endpoints : (builder)=>({
-        addTourType: builder.mutation<null, ILogin>({
+        addTourType: builder.mutation({
             query : (tourTypeName) => ({
                 url: "/tour/create-tour-type",
                 method: "POST",
                 data: tourTypeName
+            }),  
+            invalidatesTags: ["TOUR"],          
+        }),
+        removeTourType: builder.mutation({
+            query : (tourTypeId) => ({
+                url: `/tour/tour-types/${tourTypeId}`,
+                method: "DELETE"
             }),  
             invalidatesTags: ["TOUR"],          
         }),
@@ -29,5 +35,6 @@ export const tourApi = baseApi.injectEndpoints({
 
 export const {
   useAddTourTypeMutation,
-  useGetTourtypesQuery
+  useGetTourtypesQuery,
+  useRemoveTourTypeMutation
 } = tourApi
