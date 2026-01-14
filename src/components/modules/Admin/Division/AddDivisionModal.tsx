@@ -21,11 +21,17 @@ import { Form } from "@/components/ui/form"
 import { Textarea } from "@/components/ui/textarea"
 import SingleImageUploader from "@/components/SingleImageUploader"
 import { useState } from "react"
+import { useAddDivisionMutation } from "@/redux/features/division/division.api"
+import { toast } from "sonner"
 
 
 
 
 export function AddDivisionModal() {
+
+    const [open, setOpen] = useState(false);
+
+    const [addDivision] = useAddDivisionMutation();
 
     const [image, setImage] = useState<File | null>(null)
 
@@ -38,15 +44,27 @@ export function AddDivisionModal() {
     description: "", // <-- give an initial empty string
   },
 })
-    const onSubmit = async (data: { name: string, description: string }) => {       
-    //   const res = await addTourType({ name: data.name, description: data.description });      
-    //   if(res?.data?.success){
-    //     toast.success("Tour Type added successfully!")
-    //   }
-    console.log(data)
+    const onSubmit = async (data) => {      
+      const formData = new FormData();
+      formData.append("data", JSON.stringify(data));
+      formData.append("file",image as File); 
+
+      try {
+        const res = await addDivision(formData);
+        toast.success("Division added successfully");
+        setOpen(false);
+
+      } catch (error) {
+       console.log(error) 
+      }
+
+      
+
+      
+   
     }
   return (
-    <Dialog>     
+    <Dialog open={open} onOpenChange={setOpen}>     
         <DialogTrigger asChild>
           <Button >Add Division</Button>
         </DialogTrigger>
@@ -95,7 +113,7 @@ export function AddDivisionModal() {
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button type="submit" form="add-division">Division Save</Button>
+            <Button disabled={!image} type="submit" form="add-division">Division Save</Button>
           </DialogFooter>
         </DialogContent>      
     </Dialog>

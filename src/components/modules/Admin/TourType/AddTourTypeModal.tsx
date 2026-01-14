@@ -21,7 +21,7 @@ import { toast } from "sonner"
 
 
 
-export function AddTourModal() {
+export function AddTourTypeModal() {
 
      const [addTourType] = useAddTourTypeMutation();
     const form = useForm({

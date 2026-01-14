@@ -1,5 +1,5 @@
 import { DeleteConfirmation } from "@/components/DeleteConfirmation";
-import { AddTourModal } from "@/components/modules/Admin/TourType/AddTourModal";
+import {  AddTourTypeModal } from "@/components/modules/Admin/TourType/AddTourTypeModal";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useGetTourtypesQuery, useRemoveTourTypeMutation } from "@/redux/features/Tour/tour.api";
@@ -31,7 +31,7 @@ export default function AddTourTypes() {
     <div className="w-full max-w-7xl mx-auto px-5">
       <div className="flex justify-between my-8">
         <h1>Tour types</h1>
-        <AddTourModal />
+        <AddTourTypeModal />
       </div>
       <div className="mt-5 border-muted rounded-xl shadow-sm overflow-hidden">
         <Table className="w-full border-collapse ">        
