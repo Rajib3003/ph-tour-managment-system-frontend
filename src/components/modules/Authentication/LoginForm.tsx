@@ -31,8 +31,8 @@ export function LoginForm({
   const navigate = useNavigate()
     const form = useForm({    
     defaultValues: {      
-      email: "ahmedrajib255@gmail.com",
-      password: "P@ssw0rd",      
+      email: "superadmin@gmail.com",
+      password: "12345678",      
     },
   })
   const [login] = useLoginMutation();

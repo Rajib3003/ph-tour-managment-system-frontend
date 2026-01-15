@@ -8,18 +8,27 @@ import {
   DialogContent, 
   DialogFooter,
   DialogHeader,
+  DialogDescription,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useForm } from "react-hook-form"
+import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form"
 import { Form } from "@/components/ui/form"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 // import { useState } from "react"
 import { useGetTourtypesQuery } from "@/redux/features/Tour/tour.api"
 import { useGetDivisionsQuery } from "@/redux/features/division/division.api"
+import { Label } from "@/components/ui/label"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import { ChevronDownIcon } from "lucide-react"
+import { useState } from "react"
+import { setDate } from "date-fns/setDate"
+import { format, formatISO } from "date-fns"
+import { cn } from "@/lib/utils"
 
 
 
@@ -30,6 +39,8 @@ export function AddTourModal() {
 
     const {data: divisionDatas = []} = useGetDivisionsQuery(undefined);
     const {data: tourTypeDatas = []} = useGetTourtypesQuery(undefined);
+
+    const [open, setOpen] = useState(false)
     
 
     const divisionOptions = divisionDatas.map((division : {name: string, _id: string}) => ({
@@ -41,8 +52,9 @@ export function AddTourModal() {
         value: tourType._id,
     }))
 
-    console.log("divisionDatas",divisionOptions)
-    console.log("tourTypesDatas",tourTypeOptions)
+
+
+    
 
     const form = useForm({
         defaultValues: {
@@ -50,36 +62,50 @@ export function AddTourModal() {
             description: "",
             division: "",
             tourType: "",
+            startDate: "",
+            endDate: "",
         },
     })
-    const onSubmit = async (data) => {       
-        console.log("data",data)
-    //   const res = await addTourType({ name: data.name });      
-    //   if(res?.data?.success){
-    //     toast.success("Tour Type added successfully!")
-    //   }
+
+    const handleSubmit: SubmitHandler<FieldValues> = async (data) => {
+        const tourData = {
+            ... data,
+            startDate:formatISO(data.startDate),
+            endDate:formatISO(data.endDate),
+        }
+        console.log("tourData", tourData)
     }
+    // const onSubmit = async (data) => {       
+    //     console.log("data",data)
+    // //   const res = await addTourType({ name: data.name });      
+    // //   if(res?.data?.success){
+    // //     toast.success("Tour Type added successfully!")
+    // //   }
+    // }
   return (
     <Dialog>     
         <DialogTrigger asChild>
           <Button >Add Tour</Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px]"aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>Add Tour</DialogTitle>
-            
+            <DialogDescription>
+              Add a new tour.
+            </DialogDescription>
           </DialogHeader>
 
             <Form {...form}>
-                <form id="add-tour-type" onSubmit={form.handleSubmit(onSubmit)}>
-                    <FormField
+                <form id="add-tour-type" onSubmit={form.handleSubmit(handleSubmit)}>
+                    <div className="flex gap-5 items-stretch ">
+                        <FormField
                         control={form.control}
                         name="name"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="flex-1">
                             <FormLabel>Tour</FormLabel>
                             <FormControl>
-                                <Input placeholder="Tour" type="text"  {...field} />
+                                <Input className="w-full" placeholder="Tour" type="text"  {...field} />
                             </FormControl>
                             <FormDescription className="sr-only">
                                 Tour Name.
@@ -87,8 +113,10 @@ export function AddTourModal() {
                             <FormMessage />
                             </FormItem>
                         )}
-                    />                  
-                    <FormField
+                    />  
+                    </div>
+                    <div className="flex gap-5 items-stretch ">
+                         <FormField
                         control={form.control}
                         name="division"
                         render={({ field }) => (
@@ -147,14 +175,88 @@ export function AddTourModal() {
                         )}
                         />
 
-                    <FormField
+                    </div>
+                    <div className="flex gap-5 items-stretch ">
+                        <FormField
+                            control={form.control}
+                            name="startDate"
+                            render={({ field }) => (
+                            <FormItem className="flex flex-col flex-1">
+                                <FormLabel>Start Date</FormLabel>
+                                <Popover>
+                                <PopoverTrigger asChild>
+                                    <FormControl>
+                                    <Button
+                                        variant={"outline"}
+                                        className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
+                                    >
+                                        {field.value
+                                        ? (format(field.value,"ppp"))
+                                        : ("Select date")}
+                                        <ChevronDownIcon className="ml-auto h-4 w-4 opacity-50" />
+                                    </Button>
+                                    </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar
+                                    mode="single"
+                                    selected={new Date(field.value)}
+                                    onSelect={field.onChange}
+                                    disabled={(date) => 
+                                        date > new Date() || date < new Date("1900-01-01")}
+                                    captionLayout="dropdown"
+                                    />
+                                </PopoverContent>
+                                </Popover>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="endDate"
+                            render={({ field }) => (
+                            <FormItem className="flex flex-col flex-1">
+                                <FormLabel>End Date</FormLabel>
+                                <Popover>
+                                <PopoverTrigger asChild>
+                                    <FormControl>
+                                    <Button
+                                        variant={"outline"}
+                                        className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
+                                    >
+                                        {field.value
+                                        ? (format(field.value,"ppp"))
+                                        : ("Select date")}
+                                        <ChevronDownIcon className="ml-auto h-4 w-4 opacity-50" />
+                                    </Button>
+                                    </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar
+                                    mode="single"
+                                    selected={new Date(field.value)}
+                                    onSelect={field.onChange}
+                                    disabled={(date) => 
+                                        date > new Date() || date < new Date("1900-01-01")}
+                                    captionLayout="dropdown"
+                                    />
+                                </PopoverContent>
+                                </Popover>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                    </div>
+                    <div className="flex gap-5 items-stretch ">
+                          <FormField
                         control={form.control}
                         name="description"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="flex-1">
                             <FormLabel className="pt-3">Tour Description</FormLabel>
                             <FormControl>
-                                <Textarea placeholder="Description" {...field} />
+                                <Textarea className="w-full" placeholder="Description" {...field} />
                             </FormControl>
                             <FormDescription className="sr-only">
                                 Tour Description.
@@ -163,6 +265,11 @@ export function AddTourModal() {
                             </FormItem>
                         )}
                     />
+                    </div>
+                                  
+                   
+
+                  
                 </form>
             </Form>
           <DialogFooter>
