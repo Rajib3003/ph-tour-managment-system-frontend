@@ -1,8 +1,8 @@
 import { AlertCircleIcon, ImageIcon, UploadIcon, XIcon } from "lucide-react";
 
-import { FileMetadata, useFileUpload } from "@/hooks/use-file-upload";
+import {  useFileUpload, type FileMetadata } from "@/hooks/use-file-upload";
 import { Button } from "@/components/ui/button";
-import { Dispatch, useEffect } from "react";
+import {useEffect, type Dispatch } from "react";
 
 export default function MultipleImageUploader({
   onChange,
@@ -38,7 +38,7 @@ export default function MultipleImageUploader({
     } else {
       onChange([]);
     }
-  }, [files]);
+  }, [files, onChange]);
 
   return (
     <div className="flex flex-col gap-2">
