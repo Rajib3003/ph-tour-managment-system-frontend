@@ -11,6 +11,7 @@ import { toast } from "sonner";
 export default function AddTour() {
  
     const {data: tourDatas = [], isLoading} = useGetTourQuery(undefined);    
+    
 
     const [removeTour] = useRemoveTourMutation();
 
@@ -41,6 +42,8 @@ export default function AddTour() {
           <TableHeader>
             <TableRow className="bg-muted hover:bg-muted font-semibold text-lg">
               <TableHead className="w-1/4 p-3 text-center">Tour Name</TableHead>
+              <TableHead className="w-1/4 p-3 text-center">Tour Slug</TableHead>
+              <TableHead className="w-1/4 p-3 text-center">Tour Type</TableHead>
               <TableHead className="w-1/6 p-3 text-center">Start Date</TableHead>
               <TableHead className="w-1/6 p-3 text-center">End Date</TableHead>
               <TableHead className="w-1/4 p-3 text-center">Images</TableHead>
@@ -55,9 +58,11 @@ export default function AddTour() {
                 </TableCell>
               </TableRow>
             ) : (
-            tourDatas.map((item: { title: string; _id: string; startDate: string; endDate: string; images: string[] }) => (
+            tourDatas.map((item: { title: string; slug: string; tourType: string; _id: string; startDate: string; endDate: string; images: string[] }) => (
               <TableRow key={item._id}>
                 <TableCell className="font-medium w-1/4">{item?.title}</TableCell>
+                <TableCell className="font-medium w-1/4">{item?.slug}</TableCell>
+                <TableCell className="font-medium w-1/4">{item?.tourType}</TableCell>
                 <TableCell className="font-medium w-1/6">{new Date(item?.startDate).toLocaleDateString("en-GB")}</TableCell>
                 <TableCell className="font-medium w-1/6">{new Date(item?.endDate).toLocaleDateString("en-GB")}</TableCell>
                 <TableCell className="font-medium w-1/4">
