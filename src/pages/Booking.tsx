@@ -1,27 +1,34 @@
 import { Button } from "@/components/ui/button";
+import { useCreateBookingMutation } from "@/redux/features/booking/booking.api";
 import { useGetTourQuery } from "@/redux/features/Tour/tour.api";
 
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router";
 
 export default function Booking() {
   const [guestCount, setGuestCount] = useState(1);
-  const [totalAmount] = useState(0);
+  // const [totalAmount, setTotalAmount] = useState(0);
 
-  console.log(totalAmount);
+  // console.log(totalAmount);
 
   const { id } = useParams();
   const { data, isLoading, isError } = useGetTourQuery({ _id: id });
-//   const [createBooking] = useCreateBookingMutation();
+  const [createBooking] = useCreateBookingMutation();
 
   const tourData = data?.[0];
 
-  useEffect(() => {
-    if (!isLoading && !isError) {
-    //   setTotalAmount(guestCount * tourData!.costFrom);
-    }
-  }, [guestCount, totalAmount, isLoading, isError]);
+  const totalAmount =
+    !isLoading && !isError && tourData
+      ? guestCount * tourData.costFrom
+      : 0;
+      console.log(totalAmount);
+
+  // useEffect(() => {
+  //   if (!isLoading && !isError) {
+  //     setTotalAmount(guestCount * tourData!.costFrom);
+  //   }
+  // }, [guestCount, tourData, isLoading, isError]);
 
   const incrementGuest = () => {
     setGuestCount((prv) => prv + 1);
@@ -105,7 +112,7 @@ export default function Booking() {
             <div>
               <h3 className="text-xl font-semibold mb-2">What's Included</h3>
               <ul className="list-disc list-inside text-sm space-y-1">
-                {tourData?.included.map((item, index) => (
+                {tourData?.included.map((item : string, index : number) => (
                   <li key={index}>{item}</li>
                 ))}
               </ul>
@@ -114,7 +121,7 @@ export default function Booking() {
             <div>
               <h3 className="text-xl font-semibold mb-2">Tour Plan</h3>
               <ol className="list-decimal list-inside text-sm space-y-1">
-                {tourData?.tourPlan.map((plan, index) => (
+                {tourData?.tourPlan.map((plan : string, index : number) => (
                   <li key={index}>{plan}</li>
                 ))}
               </ol>

@@ -16,7 +16,7 @@ export default function Tours() {
 
   const { data } = useGetTourQuery({ division, tourType });
 
-  console.log("data", data)
+  
 
   return (
     // <div className="container mx-auto px-5 py-8 grid grid-cols-12 gap-5">
@@ -24,7 +24,7 @@ export default function Tours() {
     //   <div className="col-span-9 w-full">
     <div className="container mx-auto px-5 py-8 grid grid-cols-12 gap-5">
         <div className="col-span-12 md:col-span-8 md:col-start-3 w-full">
-        {data?.map((item: any) => (
+        {data?.map((item) => (
           <div
             key={item.slug}
             className="border border-muted rounded-lg shadow-md overflow-hidden mb-6 flex"
@@ -43,7 +43,7 @@ export default function Tours() {
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xl font-bold text-primary">
                   From ৳
-                  {/* {item.costFrom.toLocaleString()} */}
+                  {item.costFrom?.toLocaleString()}
                 </span>
                 <span className="text-sm text-muted-foreground">
                   Max {item.maxGuest} guests

@@ -61,7 +61,7 @@ export function AddTourModal() {
         defaultValues: {
             title: "", 
             location: "",
-            cost: 0,
+            costFrom: 0,
             departureLocation: "",
             arrivalLocation: "",
             maxGuest: 0,
@@ -115,6 +115,7 @@ const {
             ... data,
             maxGuest: Number(data.maxGuest),
             minAge: Number(data.minAge),
+            costFrom: Number(data.costFrom),
             startDate:formatISO(data.startDate),
             endDate:formatISO(data.endDate),
             included : data.included.map((item: {value: string}) => item.value),
@@ -190,15 +191,15 @@ const {
                         />                              
                         <FormField
                             control={form.control}
-                            name="cost"
+                            name="costFrom"
                             render={({ field }) => (
                                 <FormItem className="flex-1">
-                                <FormLabel className="pt-3">Cost</FormLabel>
+                                <FormLabel className="pt-3">Cost From</FormLabel>
                                 <FormControl>
-                                    <Input className="w-full" placeholder="Cost" type="number"  {...field} />
+                                    <Input className="w-full" placeholder="costFrom" type="number"  {...field} />
                                 </FormControl>
                                 <FormDescription className="sr-only">
-                                    Cost.
+                                    Cost From.
                                 </FormDescription>                                
                                 <FormMessage />
                                 </FormItem>
