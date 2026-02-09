@@ -5,7 +5,7 @@ export const bookingApi = baseApi.injectEndpoints({
     endpoints : (builder)=>({
         CreateBooking: builder.mutation({
             query : (tourData) => ({
-                url: "/booking/create",
+                url: "/booking",
                 method: "POST",
                 data: tourData
             }),  

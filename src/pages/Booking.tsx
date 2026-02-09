@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import { useCreateBookingMutation } from "@/redux/features/booking/booking.api";
 import { useGetTourQuery } from "@/redux/features/Tour/tour.api";
@@ -8,6 +9,7 @@ import { useParams } from "react-router";
 
 export default function Booking() {
   const [guestCount, setGuestCount] = useState(1);
+   const [showProfileModal, setShowProfileModal] = useState(false);
   // const [totalAmount, setTotalAmount] = useState(0);
 
   // console.log(totalAmount);
@@ -22,7 +24,7 @@ export default function Booking() {
     !isLoading && !isError && tourData
       ? guestCount * tourData.costFrom
       : 0;
-      console.log(totalAmount);
+      
 
   // useEffect(() => {
   //   if (!isLoading && !isError) {
@@ -37,10 +39,14 @@ export default function Booking() {
   const decrementGuest = () => {
     setGuestCount((prv) => prv - 1);
   };
+// Modal open/close
+  const openProfileUpdateModal = () => setShowProfileModal(true);
+  const closeProfileUpdateModal = () => setShowProfileModal(false);
+
 
   const handleBooking = async () => {
     let bookingData;
-
+    if (!data) return;
     if (data) {
       bookingData = {
         tour: id,
@@ -50,11 +56,19 @@ export default function Booking() {
 
     try {
       const res = await createBooking(bookingData).unwrap();
+      const paymentUrl = res.data?.paymentURL ?? res.paymentURL; 
+      
       if (res.success) {
-        window.open(res.data.paymentUrl);
+        window.open(paymentUrl);
       }
-    } catch (err) {
-      console.log(err);
+
+      
+    } catch (error:any) {
+      console.log(error.status);
+      if (error.status === 400 && error?.data?.stack === "PROFILE_INCOMPLETE") {
+        openProfileUpdateModal();
+      }    
+      
     }
   };
 
@@ -182,9 +196,46 @@ export default function Booking() {
           </div>
         </>
       )}
+       {/* Profile Update Modal */}
+      {showProfileModal && (
+        <ProfileUpdateModal onClose={closeProfileUpdateModal} />
+      )}
     </div>
   );
 }
+
+// Profile Update Modal Component
+const ProfileUpdateModal = ({ onClose }: { onClose: () => void }) => {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+        <h2 className="text-xl font-semibold mb-2 text-gray-800">
+          Profile Incomplete
+        </h2>
+
+        <p className="mb-4 text-gray-600">
+          You need to update your phone number and address before booking a tour.
+        </p>
+
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={onClose}
+            className="rounded px-4 py-2 text-gray-600 hover:bg-gray-100"
+          >
+            Cancel
+          </button>
+
+          <a
+            href="/profileUpdate"
+            className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+          >
+            Update Profile
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 //  const tourData: ITourPackage = {
 //    _id: "1",
