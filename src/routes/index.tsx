@@ -51,14 +51,19 @@ export const router = createBrowserRouter([
         Component: withAuth(Booking),
         path: "booking/:id",
       },
-      { Component: Success, path: "payment/success" },
-    { Component: Fail, path: "payment/fail" },
-    { Component: Cancel, path: "payment/cancel" },
-    //   ,
-    //     {
-    //     Component: withAuth(About),
-    //     path: "about"
-    //     }
+      { 
+        Component: Success, 
+        path: "api/v1/payment/success" 
+      },
+      { 
+        Component: Fail, 
+        path: "api/v1/payment/fail" 
+      },
+      { 
+        Component: Cancel, 
+        path: "api/v1/payment/cancel" 
+      },
+
     ]
     },
     {
