@@ -3,16 +3,29 @@
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router";
+import { Link} from "react-router";
 import Logo from "@/assets/icons/Logo";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useGetDivisionsQuery } from "@/redux/features/division/division.api";
+import { useState } from "react";
 
 interface Hero12Props {
   className?: string;
 }
 
 export default function HeroSection({ className }: Hero12Props) {
+  
+  
+  const [selectedDivision, setSelectedDivision] = useState<string | undefined>(undefined);
 
-// const Hero12 = ({ className }: Hero12Props) => {
+  const {data: divisionData} = useGetDivisionsQuery(undefined)
+
+const divisionOption = divisionData?.map((item: {_id: string, name: string})=>({
+    label: item.name,
+    value: item._id,
+  }))
+
+  
   return (
     <section className={cn("relative overflow-hidden py-32 min-h-screen", className)}>
       <div className="absolute inset-x-0 top-0 flex h-full w-full items-center justify-center opacity-100">
@@ -39,12 +52,33 @@ export default function HeroSection({ className }: Hero12Props) {
                 consequatur. Explicabo.
               </p>
             </div>
-            <div className="mt-6 flex justify-center gap-3">              
-              <Button asChild>
-                <Link to="/tours">
+            <div className="mt-6 flex justify-center gap-3">  
+              <Select onValueChange={setSelectedDivision}>
+                  <SelectTrigger className="w-[300px] border border-gray-300 rounded-md px-3 py-2 text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <SelectValue placeholder="Select a division" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectGroup>                      
+                      {divisionOption?.map((item: { value: string; label: string }) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>  
+                {selectedDivision ?            
+              <Button asChild >
+                <Link to={`/tours?division=${selectedDivision}`}>
                     Explore
                 </Link>
               </Button>
+              : <Button disabled>
+                <Link to={`/tours?division=${selectedDivision}`}>
+                    Explore
+                </Link>
+              </Button>}
             </div>
             
           </div>

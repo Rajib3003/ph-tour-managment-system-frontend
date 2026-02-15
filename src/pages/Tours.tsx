@@ -1,29 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import TourFilters from "@/components/modules/Tours/TourFilters";
 import { Button } from "@/components/ui/button";
 import { useGetTourQuery } from "@/redux/features/Tour/tour.api";
-
-
-
 import { Link, useSearchParams } from "react-router";
-
-
-
 export default function Tours() {
-  const [searchParams] = useSearchParams();
+const [searchParams] = useSearchParams();
+const division = searchParams.get("division") || undefined;
+const tourType = searchParams.get("tourType") || undefined;
+const { data } = useGetTourQuery({ division, tourType });
 
-  const division = searchParams.get("division") || undefined;
-  const tourType = searchParams.get("tourType") || undefined;
-
-  const { data } = useGetTourQuery({ division, tourType });
-
-  
-
-  return (
-    // <div className="container mx-auto px-5 py-8 grid grid-cols-12 gap-5">
-      
-    //   <div className="col-span-9 w-full">
+  return ( 
     <div className="container mx-auto px-5 py-8 grid grid-cols-12 gap-5">
-        <div className="col-span-12 md:col-span-8 md:col-start-3 w-full">
+        <TourFilters />
+        <div className="col-span-12 md:col-span-9  w-full">
         {data?.map((item) => (
           <div
             key={item.slug}
