@@ -11,7 +11,7 @@ const { data } = useGetTourQuery({ division, tourType });
 
   return ( 
     <div className="container mx-auto px-5 py-8 grid grid-cols-12 gap-5">
-        <TourFilters />
+      <TourFilters />
         <div className="col-span-12 md:col-span-9  w-full">
         {data?.map((item) => (
           <div

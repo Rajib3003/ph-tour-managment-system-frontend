@@ -5,11 +5,29 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useGetTourtypesQuery, useRemoveTourTypeMutation } from "@/redux/features/Tour/tour.api";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
+import { useState } from "react";
 
 
 export default function AddTourTypes() {
-    const {data: tourTypesDatas = []} = useGetTourtypesQuery(undefined);
+    const [currentPage, setCurrentPage] = useState(1);
+    const limit = 10;
+    
+    const { data } = useGetTourtypesQuery({ page: currentPage, limit });
 
+    const tourTypesDatas = data?.data || [];
+    const totalPages = data?.meta?.totalPage || 1;
+    const isPrevDisabled = currentPage === 1;
+    const isNextDisabled = currentPage === totalPages;
+  
     const [removeTourType] = useRemoveTourTypeMutation();
 
     const handleRemoveTourType = async (tourId: string) => {
@@ -24,6 +42,8 @@ export default function AddTourTypes() {
       }
       
     }
+    
+
 
     
     
@@ -57,6 +77,41 @@ export default function AddTourTypes() {
           </TableBody> 
         </Table>
       </div>
+      {totalPages > 1 && (
+        <div>
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem className={`cursor-pointer ${
+              isPrevDisabled ? "opacity-50 cursor-not-allowed" : ""
+            }`}>
+              <PaginationPrevious onClick={() => !isPrevDisabled && setCurrentPage(prev => Math.max(prev - 1, 1))} />
+            </PaginationItem>
+
+            {[...Array(totalPages)].map((_, i) => {
+              const page = i + 1;
+              return (
+                <PaginationItem key={page} className="cursor-pointer">
+                  <PaginationLink
+                    onClick={() => setCurrentPage(page)}
+                    isActive={currentPage === page}
+                  >
+                    {page}
+                  </PaginationLink>
+                </PaginationItem>
+              );
+            })}           
+            <PaginationItem className="cursor-pointer">
+              <PaginationEllipsis />
+            </PaginationItem>
+            <PaginationItem className={`cursor-pointer ${
+              isNextDisabled ? "opacity-50 cursor-not-allowed" : ""
+            }`}>
+              <PaginationNext onClick={() => !isNextDisabled && setCurrentPage(prev => Math.min(prev + 1, totalPages))} />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
+      )}
     </div>
   )
 }

@@ -33,12 +33,14 @@ import type { FileMetadata } from "@/hooks/use-file-upload"
 
 
 
+
 export function AddTourModal() {
 
     const [open, setOpen] = useState(false);
 
     const {data: divisionDatas = []} = useGetDivisionsQuery(undefined);
-    const {data: tourTypeDatas = []} = useGetTourtypesQuery(undefined);
+    const {data} = useGetTourtypesQuery({limit: 1000, fields: "_id,name"});
+    const tourTypesDatas = data?.data || [];
     const [addTour] = useAddTourMutation();
 
     const [images, setImages] = useState<(File | FileMetadata)[]>([])
@@ -48,7 +50,7 @@ export function AddTourModal() {
         label: division.name,
         value: division._id,
     }))
-    const tourTypeOptions = tourTypeDatas.map((tourType : {name: string, _id: string}) => ({
+    const tourTypeOptions = tourTypesDatas.map((tourType : {name: string, _id: string}) => ({
         label: tourType.name,
         value: tourType._id,
     }))
@@ -361,8 +363,7 @@ const {
                                     mode="single"
                                     selected={new Date(field.value)}
                                     onSelect={field.onChange}
-                                    disabled={(date) => 
-                                        date > new Date() || date < new Date("1900-01-01")}
+                                    disabled={(date) => date < new Date() || date > new Date("2100-01-01")}
                                     captionLayout="dropdown"
                                     />
                                 </PopoverContent>
@@ -397,7 +398,7 @@ const {
                                     selected={new Date(field.value)}
                                     onSelect={field.onChange}
                                     disabled={(date) => 
-                                        date > new Date() || date < new Date("1900-01-01")}
+                                        date < new Date() || date > new Date("2100-01-01")}
                                     captionLayout="dropdown"
                                     />
                                 </PopoverContent>

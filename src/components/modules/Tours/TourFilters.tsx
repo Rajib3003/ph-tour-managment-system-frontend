@@ -13,14 +13,15 @@ const selectedDivision = searchParams.get("division") || undefined;
 const selectedTourType = searchParams.get("tourType") || undefined;
 
      const {data: divisionData, isLoading:divisionIsLoading} = useGetDivisionsQuery(undefined)
-  const {data: tourTypeData, isLoading:tourTypeIsLoading} = useGetTourtypesQuery(undefined)
+  const {data, isLoading:tourTypeIsLoading} = useGetTourtypesQuery({limit: 1000, fields: "_id,name"})
+  const tourTypesDatas = data?.data || [];
 
   
   const divisionOption = divisionData?.map((item: {_id: string, name: string})=>({
     label: item.name,
     value: item._id,
   }))
-  const tourTypeOption = tourTypeData?.map((item: {_id:string, name:string})=>({
+  const tourTypeOption = tourTypesDatas?.map((item: {_id:string, name:string})=>({
     label: item.name,
     value: item._id,
   }))
